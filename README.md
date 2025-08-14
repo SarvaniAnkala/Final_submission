@@ -1,21 +1,16 @@
 # Final_submission
 # TransformerEnhanced GCN for DocLayNet Document Layout Analysis
-
 A PyTorch-based implementation of an advanced Graph Convolutional Network (GCN) enhanced with Transformer attention mechanisms for document layout analysis on the DocLayNet dataset. This project achieves state-of-the-art performance in classifying document elements into 11 structural categories.
 
 ## 🎯 Overview
-
 This repository provides a complete pipeline for document layout analysis using a novel TransformerEnhanced GCN architecture that combines:
-
-- **Spatial Graph Reasoning**: GCN layers capture geometric relationships between document elements
-- **Sequential Attention**: Transformer encoder learns contextual dependencies
-- **Robust Training**: Advanced training pipeline with comprehensive error handling
-- **End-to-End Inference**: Ready-to-use PDF processing application
+- Spatial Graph Reasoning: GCN layers capture geometric relationships between document elements
+- Sequential Attention: Transformer encoder learns contextual dependencies
+- Robust Training: Advanced training pipeline with comprehensive error handling
+- End-to-End Inference: Ready-to-use PDF processing application
 
 ## 🏗️ Architecture
-
 ### TransformerEnhanced GCN Model
-
 ```
 Input Features (9D Geometry) 
     ↓
@@ -29,45 +24,54 @@ Classification Head (MLP)
     ↓
 11-Class Predictions
 ```
-
-**Key Specifications:**
-- **Parameters**: 319,435 trainable parameters
-- **Hidden Dimensions**: 128
-- **Attention Heads**: 4
-- **Graph Construction**: K-nearest neighbors (K=10)
-- **Input Features**: Normalized bounding box coordinates, dimensions, centers, area
+Key Specifications:
+- Parameters: 319,435 trainable parameters
+- Hidden Dimensions: 128
+- Attention Heads: 4
+- Graph Construction: K-nearest neighbors (K=10)
+- Input Features: Normalized bounding box coordinates, dimensions, centers, area
 
 ## 📊 Performance Results
-
-### Training Performance (39 Epochs)
-
+### Training Performance (50 Epochs)
 | Metric | Value |
 |--------|-------|
-| **Best Validation Accuracy** | **72.16%** (Epoch 36) |
-| **Final Training Accuracy** | 71.86% |
-| **Final Training Loss** | 0.6438 |
-| **Final Validation Loss** | 0.6360 |
-| **Training Time per Epoch** | ~16 minutes |
-| **Total Parameters** | 319,435 |
+| Best Validation Accuracy | 72.60% (Epoch 47) |
+| Final Training Accuracy | 63.77% |
+| Final Training Loss | 0.7209 |
+| Final Validation Loss | 0.7260 |
+| Training Time per Epoch | ~15–22 minutes |
+| Total Training Time | 49,417.8s (~13.72 hours) |
+| Total Parameters | 319,435 |
+
+Notes:
+- Training/validation lines in logs are formatted as "Loss/Accuracy". For example, "Val: 0.6251/0.7260" at Epoch 47 indicates validation loss 0.6251 and validation accuracy 72.60%.
+- Best validation accuracy improved from earlier 72.16% (Epoch 36) to 72.60% (Epoch 47).
 
 ### Learning Characteristics
+- ✅ Excellent Convergence: Validation accuracy steadily improved from 66.80% (Epoch 1) to 72.60% (Epoch 47).
+- ✅ No Significant Overfitting: Small train–val gap with stable validation improvements through late epochs.
+- ✅ Stable Training: Consistent learning across 50 epochs without degradation.
+- ✅ Parameter Efficiency: Strong performance with moderate model size.
 
-- ✅ **Excellent Convergence**: Steady improvement from 66.80% to 72.16% validation accuracy
-- ✅ **No Overfitting**: Minimal gap between training and validation performance
-- ✅ **Stable Training**: Consistent learning over 39 epochs without degradation
-- ✅ **Parameter Efficiency**: Strong performance with moderate model size
+### Test Set Performance
+| Metric | Value |
+|--------|-------|
+| Test Loss | 0.6229 |
+| Test Accuracy | 72.76% |
+
+Caveats:
+- The sklearn classification report failed due to a labels/target_names mismatch (10 vs 11); ensure labels parameter matches all 11 classes when regenerating the report.
+- Plot generation encountered a dimension mismatch (50 vs 51 points); ensure logged epoch counts align with arrays before plotting.
 
 ### Expected Test Performance
-
 | Metric | Estimated Range |
 |--------|-----------------|
-| **Test Accuracy** | 71-73% |
-| **Macro Precision** | 68-72% |
-| **Macro Recall** | 65-70% |
-| **Macro F1-Score** | 67-71% |
+| Test Accuracy | 71-73% |
+| Macro Precision | 68-72% |
+| Macro Recall | 65-70% |
+| Macro F1-Score | 67-71% |
 
 ### Per-Class Performance Expectations
-
 | Class | Expected Accuracy | Difficulty Level |
 |-------|------------------|------------------|
 | Text | 85-90% | Easy (most common) |
@@ -82,38 +86,30 @@ Classification Head (MLP)
 | Footnote | 50-55% | Most difficult (rare, small) |
 
 ## 🔧 Installation
-
 ### Requirements
-
 ```bash
 # Core dependencies
 pip install torch torchvision torch_geometric scipy matplotlib scikit-learn
-
 # PDF processing (for inference)
 pip install pdf2image pillow
-
 # Optional: for advanced metrics
 pip install sklearn pandas numpy
 ```
 
 ### System Requirements
-
-**Minimum:**
+Minimum:
 - GPU: 6GB VRAM (GTX 1060 or equivalent)
 - RAM: 16GB system memory
 - Storage: 50GB for full dataset
 
-**Recommended:**
+Recommended:
 - GPU: 8GB+ VRAM (RTX 3070 or better)
 - RAM: 32GB system memory
 - CPU: 8+ cores for data loading
 
 ## 🚀 Quick Start
-
 ### 1. Dataset Setup
-
 Organize your DocLayNet dataset as follows:
-
 ```
 # For 1% subset (recommended for testing)
 doclaynet_1percent/
@@ -135,41 +131,34 @@ doclaynet/
 ```
 
 ### 2. Training
-
-**Quick test (1% subset):**
+Quick test (1% subset):
 ```bash
 python fixed_training_script.py --dataset_size small --plots
 ```
 
-**Full training:**
+Full training:
 ```bash
 python fixed_training_script.py --dataset_size full --plots
 ```
 
-**Quick validation:**
+Quick validation:
 ```bash
 python fixed_training_script.py --dataset_size small --quick_test
 ```
 
 ### 3. Inference
-
 Process PDF documents for layout analysis:
-
 ```bash
 # Setup directories
 mkdir -p input output
-
 # Place PDFs in input/ directory
 cp your_document.pdf input/
-
 # Run inference
 python app.py
 ```
-
-Results will be saved as JSON files in the `output/` directory.
+Results will be saved as JSON files in the output/ directory.
 
 ## 📁 File Structure
-
 ```
 ├── advanced_gcn_model.py      # Main TransformerEnhanced GCN implementation
 ├── fixed_gcn_model.py         # Enhanced version with robust error handling
@@ -182,9 +171,7 @@ Results will be saved as JSON files in the `output/` directory.
 ```
 
 ## ⚙️ Configuration
-
 ### Core Parameters (UserConfig)
-
 ```python
 class UserConfig:
     HIDDEN_DIMS = 128           # Node feature dimensions
@@ -201,7 +188,6 @@ class UserConfig:
 ```
 
 ### GPU Memory Optimization
-
 ```python
 # For 6GB GPU
 config.BATCH_SIZE = 2
@@ -213,58 +199,48 @@ config.MAX_NODES = 300
 ```
 
 ## 📋 Dataset Information
-
 ### DocLayNet Classes (11 total)
-
-1. **Caption** - Image and table captions
-2. **Footnote** - Page footnotes
-3. **Formula** - Mathematical equations
-4. **List-item** - Bulleted and numbered lists
-5. **Page-footer** - Bottom page elements
-6. **Page-header** - Top page elements
-7. **Picture** - Images and figures
-8. **Section-header** - Section titles
-9. **Table** - Tabular data
-10. **Text** - Body text paragraphs
-11. **Title** - Document and section titles
+1. Caption - Image and table captions
+2. Footnote - Page footnotes
+3. Formula - Mathematical equations
+4. List-item - Bulleted and numbered lists
+5. Page-footer - Bottom page elements
+6. Page-header - Top page elements
+7. Picture - Images and figures
+8. Section-header - Section titles
+9. Table - Tabular data
+10. Text - Body text paragraphs
+11. Title - Document and section titles
 
 ### Dataset Splits
-
-- **Training**: 55,282 graphs
-- **Validation**: 6,910 graphs  
-- **Test**: 6,911 graphs
-- **Total Annotations**: ~69K across all splits
+- Training: 55,282 graphs
+- Validation: 6,910 graphs  
+- Test: 6,911 graphs
+- Total Annotations: ~69K across all splits
 
 ## 🔍 Advanced Features
-
 ### Graph Construction
-
-- **K-NN Connectivity**: Each node connected to K nearest spatial neighbors
-- **Geometric Features**: 9D normalized features (bbox, center, dimensions, area)
-- **Robust Edge Creation**: Multiple fallback strategies for edge construction
-- **Batch Processing**: Efficient batched graph operations
+- K-NN Connectivity: Each node connected to K nearest spatial neighbors
+- Geometric Features: 9D normalized features (bbox, center, dimensions, area)
+- Robust Edge Creation: Multiple fallback strategies for edge construction
+- Batch Processing: Efficient batched graph operations
 
 ### Model Architecture Details
-
-- **Feature Extractor**: MLP embedding from 9D geometry to 128D hidden space
-- **GCN Backbone**: 3-layer GCN with residual connections and layer normalization
-- **Transformer Encoder**: 2 layers, 4 heads, GELU activation, pre-norm architecture
-- **Classification Head**: Multi-layer MLP with dropout and batch normalization
+- Feature Extractor: MLP embedding from 9D geometry to 128D hidden space
+- GCN Backbone: 3-layer GCN with residual connections and layer normalization
+- Transformer Encoder: 2 layers, 4 heads, GELU activation, pre-norm architecture
+- Classification Head: Multi-layer MLP with dropout and batch normalization
 
 ### Training Enhancements
-
-- **Label Validation**: Automatic correction of invalid label ranges
-- **Gradient Clipping**: Prevents exploding gradients (max_norm=1.0)
-- **Learning Rate Scheduling**: ReduceLROnPlateau with patience
-- **Early Stopping**: Prevents overfitting with configurable patience
-- **Model Checkpointing**: Automatic saving of best validation model
+- Label Validation: Automatic correction of invalid label ranges
+- Gradient Clipping: Prevents exploding gradients (max_norm=1.0)
+- Learning Rate Scheduling: ReduceLROnPlateau with patience
+- Early Stopping: Prevents overfitting with configurable patience
+- Model Checkpointing: Automatic saving of best validation model
 
 ## 🛠️ Troubleshooting
-
 ### Common Issues and Solutions
-
 #### 1. CUDA Out of Memory
-
 ```bash
 # Reduce batch size
 config.BATCH_SIZE = 2
@@ -275,14 +251,17 @@ torch.cuda.empty_cache()
 ```
 
 #### 2. Invalid Labels Error
-
 The system automatically handles invalid labels:
 - Converts 1-based to 0-based indexing
-- Clamps labels to valid range [0, 10]
+- Clamps labels to valid range
 - Reports statistics on label corrections
 
-#### 3. Graph Construction Failures
+Latest run:
+- Label validation: 2,392 samples had invalid labels
+- Label range found:
+- Valid range:
 
+#### 3. Graph Construction Failures
 Multiple fallback strategies are implemented:
 - Primary: K-NN with cKDTree
 - Fallback 1: Distance threshold-based edges
@@ -290,14 +269,12 @@ Multiple fallback strategies are implemented:
 - Final fallback: Sequential chain connectivity
 
 #### 4. Empty Documents
-
 Automatic handling of edge cases:
 - Creates dummy nodes for empty documents
 - Maintains minimum graph connectivity
 - Prevents training crashes
 
 ### Performance Optimization
-
 ```python
 # For faster training on smaller datasets
 config.MAX_NODES = 200
@@ -311,9 +288,7 @@ config.NUM_HEADS = 2
 ```
 
 ## 📈 Monitoring and Evaluation
-
 ### Training Metrics
-
 The system tracks and saves:
 - Training/validation loss curves
 - Training/validation accuracy curves
@@ -321,9 +296,13 @@ The system tracks and saves:
 - Per-class precision, recall, F1-score
 - Learning rate scheduling history
 
-### Model Checkpoints
+Latest artifacts:
+- Best model saved as best_transformer_gcn_model.pth
+- Plots saved as training_curves.png, confusion_matrix.png
+- Note: If plot generation errors occur due to array length mismatches (e.g., 50 vs 51), verify logging steps and epoch counters.
 
-Best model saved as `best_transformer_gcn_model.pth` contains:
+### Model Checkpoints
+Best model saved as best_transformer_gcn_model.pth contains:
 - Model state dictionary
 - Optimizer state
 - Training configuration
@@ -331,50 +310,40 @@ Best model saved as `best_transformer_gcn_model.pth` contains:
 - Model architecture metadata
 
 ## 🔬 Experimental Results Analysis
-
 ### Training Dynamics
-
 The model demonstrates excellent learning characteristics:
-
-- **Epoch 1**: Val accuracy 66.80% → **Epoch 36**: 72.16% (+5.36% improvement)
-- **Consistent Progress**: No performance plateaus or degradation
-- **Stable Convergence**: Training continued to epoch 39 without overfitting
-- **Balanced Learning**: Small train-val gap indicates good generalization
+- Epoch 1: Val accuracy 66.80% → Epoch 47: 72.60% (+5.80% improvement)
+- Consistent Progress: New best checkpoints recorded across 18 epochs, culminating at Epoch 47.
+- Stable Convergence: Training completed to epoch 50 with continued stability.
+- Balanced Learning: Small train–val gap indicates good generalization.
 
 ### Architecture Advantages
-
-1. **Spatial Awareness**: GCN captures document layout geometry
-2. **Context Understanding**: Transformer attends to element relationships
-3. **Scalability**: Handles variable document sizes efficiently
-4. **Robustness**: Multiple fallback mechanisms prevent failures
+1. Spatial Awareness: GCN captures document layout geometry
+2. Context Understanding: Transformer attends to element relationships
+3. Scalability: Handles variable document sizes efficiently
+4. Robustness: Multiple fallback mechanisms prevent failures
 
 ## 🚀 Future Improvements
-
 ### Model Architecture
-
-- [ ] **Multi-scale Features**: Incorporate visual features from document images
-- [ ] **Hierarchical Architecture**: Model document structure at multiple levels
-- [ ] **Attention Visualization**: Implement attention weight analysis tools
-- [ ] **Ensemble Methods**: Combine multiple model architectures
+- [ ] Multi-scale Features: Incorporate visual features from document images
+- [ ] Hierarchical Architecture: Model document structure at multiple levels
+- [ ] Attention Visualization: Implement attention weight analysis tools
+- [ ] Ensemble Methods: Combine multiple model architectures
 
 ### Training Pipeline
-
-- [ ] **Cross-validation**: Implement k-fold validation for robust evaluation
-- [ ] **Data Augmentation**: Geometric transformations for improved generalization
-- [ ] **Active Learning**: Focus training on difficult examples
-- [ ] **Transfer Learning**: Pre-training on larger document corpora
+- [ ] Cross-validation: Implement k-fold validation for robust evaluation
+- [ ] Data Augmentation: Geometric transformations for improved generalization
+- [ ] Active Learning: Focus training on difficult examples
+- [ ] Transfer Learning: Pre-training on larger document corpora
 
 ### Inference Capabilities
-
-- [ ] **Batch PDF Processing**: Process multiple documents simultaneously
-- [ ] **Real-time Analysis**: Optimize for low-latency applications
-- [ ] **Confidence Estimation**: Provide prediction uncertainty measures
-- [ ] **Interactive Correction**: Allow manual refinement of predictions
+- [ ] Batch PDF Processing: Process multiple documents simultaneously
+- [ ] Real-time Analysis: Optimize for low-latency applications
+- [ ] Confidence Estimation: Provide prediction uncertainty measures
+- [ ] Interactive Correction: Allow manual refinement of predictions
 
 ## 📚 Usage Examples
-
 ### Basic Training
-
 ```python
 from fixed_training_script import main
 from argparse import Namespace
@@ -391,7 +360,6 @@ exit_code = main(args)
 ```
 
 ### Custom Configuration
-
 ```python
 from advanced_gcn_model import UserConfig, TransformerEnhancedGCN
 
@@ -410,7 +378,6 @@ model = TransformerEnhancedGCN(
 ```
 
 ### Inference on Custom Data
-
 ```python
 from app import ModelInference
 
@@ -428,30 +395,30 @@ for result in results:
 ```
 
 ## 📄 License
-
 MIT License - see LICENSE file for details.
 
 ## 🙏 Acknowledgments
-
-- **DocLayNet Dataset**: [https://github.com/DS4SD/DocLayNet](https://github.com/DS4SD/DocLayNet)
-- **PyTorch Geometric**: Graph neural network library
-- **Transformers**: Attention mechanism implementation
+- DocLayNet Dataset: [https://github.com/DS4SD/DocLayNet](https://github.com/DS4SD/DocLayNet)
+- PyTorch Geometric: Graph neural network library
+- Transformers: Attention mechanism implementation
 
 ## 📞 Support
-
 For questions, issues, or contributions:
+1. Check Documentation: Review this README and code comments
+2. Search Issues: Look for similar problems in the issue tracker
+3. Create Issue: Provide detailed description with error logs
+4. Contribute: Submit pull requests for improvements
 
-1. **Check Documentation**: Review this README and code comments
-2. **Search Issues**: Look for similar problems in the issue tracker
-3. **Create Issue**: Provide detailed description with error logs
-4. **Contribute**: Submit pull requests for improvements
+***
 
----
-
-**Project Status**: ✅ **Production Ready** - Model achieves 72.16% validation accuracy with robust training pipeline and comprehensive error handling.
-
-
-
-
-
-└── requirements.txt              # Python dependencies
+Appendix: Latest Run Log Highlights
+- Created 55,282 train, 6,910 val, 6,911 test graphs
+- Data loaders: 27,641 train batches; 3,455 val; 3,456 test
+- Feature dimensions: 128
+- Model: 2-layer GCN → 2-layer Transformer → Classifier; hidden dims 128; 4 heads
+- Best validation accuracy: 0.7260
+- Test accuracy: 0.7276
+- Training completed in 49,417.8s
+- Known issues encountered:
+  - Classification report labels mismatch (10 vs 11 classes)
+  - Plot dimension mismatch (50 vs 51 points)
